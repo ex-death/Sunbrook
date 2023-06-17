@@ -66,7 +66,7 @@ public class Line : MonoBehaviour
         this.Simulate();
         
         throwDelta = Mathf.RoundToInt(((Vector2)hook.transform.position - oldHook).magnitude*2);
-        Debug.Log(throwDelta);
+        // Debug.Log(throwDelta);
         oldHook = hook.transform.position;
         if(isRelease)
         {
