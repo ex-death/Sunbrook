@@ -10,6 +10,8 @@ public class Line : MonoBehaviour
     public GameObject lineEnd;
     public GameObject hook;
     public GameObject bob;
+    public GameObject bait;
+    public Bait baitType;
 
     private LineRenderer lineRenderer;
     private List<RopeSegment> ropeSegments = new List<RopeSegment>();
@@ -19,6 +21,7 @@ public class Line : MonoBehaviour
 
     private bool isReeling;
     public bool isRelease;
+    public bool baiting;
 
     [SerializeField]
     public int lineOut = 35; //length of rope unreeled
@@ -143,8 +146,11 @@ public class Line : MonoBehaviour
             //     return;
             RopeSegment firstSeg = this.ropeSegments[i];
             Vector2 velocity = firstSeg.posNow - firstSeg.posOld;
-            
-            if(firstSeg.posNow.y < 1.5f) //if underwater
+            bool inWater = DetectWater(firstSeg.posNow);
+            // Debug.Log(i + " " + inWater);
+
+
+            if(inWater) //if underwater
             {
                 gravityForce = new Vector2(0f, -.005f);
                 if(isBob && i != this.segLen - bobLen - 1)
@@ -178,6 +184,10 @@ public class Line : MonoBehaviour
             if(i == this.segLen - 1) //end = hook
             {
                 hook.transform.position = firstSeg.posNow;
+                if(bait != null && inWater)
+                    baiting = true;
+                else
+                    baiting = false;
                 // firstSeg.posNow = hook.transform.position;
                 // firstSeg.posOld = firstSeg.posNow;
 
@@ -272,5 +282,14 @@ public class Line : MonoBehaviour
             this.posNow = pos;
             this.posOld = pos;
         }
+    }
+
+    bool DetectWater(Vector2 pos)
+    {
+        int layerMask = 1 << 4;
+        RaycastHit2D hit = Physics2D.Raycast(pos, Vector2.zero, .1f, layerMask);
+        if(hit.collider != null)// == "Water")
+            return true;
+        return false;
     }
 }
